@@ -6,11 +6,10 @@ import io
 
 def to_excel(df):
     output = io.BytesIO()
-    writer = pd.ExcelWriter(output, engine='xlsxwriter')
-    df.to_excel(writer, index=False, sheet_name='Sheet1')
-    writer.save()
-    processed_data = output.getvalue()
-    return processed_data
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, sheet_name='Sheet1', index=False)
+    output.seek(0)
+    return output.read()
 
 def get_table_download_link(df):
     val = to_excel(df)
@@ -18,7 +17,7 @@ def get_table_download_link(df):
     return f'<a href="data:application/octet-stream;base64,{b64.decode()}" download="output.xlsx" class="download_link">Download Excel file</a>'
 
 def main():
-    st.title("👋 Decimal to Fraction Converter")
+    st.title("Decimal to Fraction Converter")
 
     # User selects the rounding denominator
     rounding_denominator = st.selectbox('Select rounding denominator', [8, 16, 32], index=1)
